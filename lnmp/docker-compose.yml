@@ -1,8 +1,19 @@
+# volumes(web-container)
+config_volumes:
+    build: ./config
+    volumes:
+        - /usr/local/php7/etc/:/usr/local/php/etc/
+        - /var/log/php7:/var/log/hp7
+        - /usr/local/nginx/conf/nginx.conf:/usr/local/nginx/conf/nginx.conf
+        - /usr/local/nginx/conf/conf.d:/usr/local/nginx/conf/conf.d
+        - /usr/local/nginx/logs:/usr/local/nginx/logs
+        - /var/www/html:/var/www/html
+        #- /opt/data/mysql:/var/lib/mysql
 # mysql
 mysql:
     build: ./mysql
     ports:
-        - "8306:3306"
+        - "3306:3306"
     environment:
         - MYSQL_DATABASE=mysql
         - MYSQL_USER=developer
@@ -16,21 +27,24 @@ mysql:
 php7:
     build: ./php7
     ports:
-        - "9009:9000"
+        - "9000:9000"
     links:
         - mysql
-#    volumes:
-#        - ./php7/config/php.ini:/usr/local/php/lib/php.ini:ro
+    volumes:
+        - config_volumes
     restart: always
 
-# web
+# nginx
 nginx:
     build: ./nginx
     ports:
-        - "8000:80"
-        - "8430:443"
+        - "80:80"
+        - "443:443"
     links:
         - php7
-    volumes:
-        - /var/www/html:/usr/local/nginx/html
+    volumes_from:
+        - config_volumes 
     restart: always
+
+
+

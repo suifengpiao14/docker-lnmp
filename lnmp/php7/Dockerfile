@@ -33,7 +33,7 @@ RUN cd /tmp && \
     make install
 
 #复制文件
-RUN cp /tmp/php-7.0.12/php.ini-production /usr/local/php/lib/php.ini && \
+RUN cp /tmp/php-7.0.12/php.ini-production /usr/local/php/etc/php.ini && \
     cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf && \
     cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
 
@@ -44,5 +44,11 @@ EXPOSE 9000
 #配置php
 RUN sed -i -e 's/listen = 127.0.0.1:9000/listen = 9000/' /usr/local/php/etc/php-fpm.d/www.conf
 
+# 方便更改配置文件
+VOLUME /usr/local/php/etc/
+
+#mount log
+VOLUME /var/log/php7/
+
 #启动php
-ENTRYPOINT ["/usr/local/php/sbin/php-fpm", "-F", "-c", "/usr/local/php/lib/php.ini"]
+ENTRYPOINT ["/usr/local/php/sbin/php-fpm", "-F", "-c", "/usr/local/php/etc/php.ini"]

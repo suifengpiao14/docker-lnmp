@@ -27,10 +27,17 @@ RUN cd /tmp && \
     make install
 
 #配置nginx
-ENV HTTP_PHP_CONFIG \\\n\\\t#php\\\n\\\tlocation ~ \\\\.php$ {\\\n\\\t\\\troot    html;\\\n\\\t\\\tfastcgi_pass   php7:9000;\\\n\\\t\\\tfastcgi_index    index.php;\\\n\\\t\\\tfastcgi_param  SCRIPT_FILENAME    /usr/local/nginx/html\$fastcgi_script_name;\\\n\\\t\\\tinclude    fastcgi_params;\\\n\\\t}\\\n\\\n\\\t
+COPY ./conf.d/ /usr/local/nginx/conf/conf.d/
+COPY ./nginx.conf /usr/local/nginx/conf/nginx.conf
+# mount nginx conf
+#VOLUME /usr/local/nginx/conf/nginx.conf
 
-RUN sed -i -e "s@# deny access to .htaccess files, if Apache@${HTTP_PHP_CONFIG}# deny access to .htaccess files, if Apache@" /usr/local/nginx/conf/nginx.conf
+# mount nginx conf.d
 
+VOLUME /usr/local/nginx/conf/conf.d
+
+# mount nginx log
+VOLUME /usr/local/nginx/logs
 
 EXPOSE 80 443
 
