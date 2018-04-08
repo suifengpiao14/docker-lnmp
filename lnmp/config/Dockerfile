@@ -33,5 +33,4 @@ COPY ./nginx/conf  /var/conf/default/nginx/conf
 #VOLUME /usr/local/nginx/logs
 
 #启动volume contariner 后复制默认配置脚本
-#ENTRYPOINT ["cp -r -n /var/conf/default/php7/etc/* /usr/local/php7/etc/ && cp -r -n /var/conf/default/nginx/conf/* /usr/local/nginx/conf/"]
-#ENTRYPOINT ["cp -r -n /var/conf/default/php7/etc/* /usr/local/php7/etc/ "]
+#CMD ["cp -r -n /var/conf/default/php7/etc/* /usr/local/php7/etc/ && cp -r -n /var/conf/default/nginx/conf/* /usr/local/nginx/conf/"]

@@ -1,50 +1,65 @@
-# volumes(web-container)
-config_volumes:
-    build: ./config
-    volumes:
-        - /usr/local/php7/etc/:/usr/local/php/etc/
-        - /var/log/php7:/var/log/hp7
-        - /usr/local/nginx/conf/nginx.conf:/usr/local/nginx/conf/nginx.conf
-        - /usr/local/nginx/conf/conf.d:/usr/local/nginx/conf/conf.d
-        - /usr/local/nginx/logs:/usr/local/nginx/logs
-        - /var/www/html:/var/www/html
-        #- /opt/data/mysql:/var/lib/mysql
-# mysql
-mysql:
-    build: ./mysql
-    ports:
-        - "3306:3306"
-    environment:
-        - MYSQL_DATABASE=mysql
-        - MYSQL_USER=developer
-        - MYSQL_PASSWORD=root
-        - MYSQL_ROOT_PASSWORD=123456
-    volumes:
-        - /opt/data/mysql:/var/lib/mysql
-    restart: always
+version: "3"
 
-# php7
-php7:
-    build: ./php7
-    ports:
-        - "9000:9000"
-    links:
-        - mysql
-    volumes:
-        - config_volumes
-    restart: always
+services:
 
-# nginx
-nginx:
-    build: ./nginx
-    ports:
-        - "80:80"
-        - "443:443"
-    links:
-        - php7
-    volumes_from:
-        - config_volumes 
-    restart: always
-
-
-
+    # volumes(web-container)
+    config_volumes:
+        build: ./config
+        volumes:
+            - php7_etc_dir:/usr/local/php/etc
+            - php7_log_dir:/var/log/hp7
+            - nginx_conf_file:/usr/local/nginx/conf/nginx.conf
+            - nginx_conf_dir:/usr/local/nginx/conf/conf.d
+            - nginx_logs_dir:/usr/local/nginx/logs
+            - html_dir:/var/www/html
+            #- /opt/data/mysql:/var/lib/mysql
+    # mysql
+    mysql:
+        build: ./mysql
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_DATABASE=mysql
+            - MYSQL_USER=developer
+            - MYSQL_PASSWORD=root
+            - MYSQL_ROOT_PASSWORD=123456
+        volumes:
+            - /opt/data/mysql:/var/lib/mysql
+        restart: always
+    
+    # php7
+    php7:
+        build: ./php7
+        ports:
+            - "9000:9000"
+        links:
+            - mysql
+        volumes:
+            - php7_etc_dir:/usr/local/php/etc
+            - php7_log_dir:/var/log/hp7
+            - html_dir:/var/www/html
+        restart: always
+    
+    # nginx
+    nginx:
+        build: ./nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        links:
+            - php7
+        volumes:
+            - nginx_conf_file:/usr/local/nginx/conf/nginx.conf
+            - nginx_logs_dir:/usr/local/nginx/logs
+            - nginx_conf_dir:/usr/local/nginx/conf/conf.d
+            - html_dir:/var/www/html
+        restart: always
+    
+    
+volumes:
+    php7_etc_dir:
+    php7_log_dir:
+    nginx_conf_file:
+    nginx_conf_dir:
+    nginx_logs_dir:
+    html_dir:
